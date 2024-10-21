@@ -35,9 +35,15 @@ function cleanEmailData(emailData: any): CleanedEmail {
   return { dateSent, subject, toName, toEmail, link };
 }
 
-export async function exportEmails(accessToken: string, startDate: Date, endDate: Date): Promise<CleanedEmail[]> {
+export async function exportEmails(
+  accessToken: string, 
+  startDate: Date, 
+  endDate: Date, 
+  setExportCount: (count: number) => void
+): Promise<CleanedEmail[]> {
   const emails: CleanedEmail[] = [];
   let pageToken = '';
+  let totalExported = 0;
 
   console.log('Starting sent email export process...');
 
@@ -95,6 +101,8 @@ export async function exportEmails(accessToken: string, startDate: Date, endDate
           const emailData = await emailResponse.json();
           const cleanedEmail = cleanEmailData(emailData);
           emails.push(cleanedEmail);
+          totalExported++;
+          setExportCount(totalExported);
           console.log(`Added cleaned message ${message.id} to export list`);
 
           // Add a small delay to avoid hitting rate limits
