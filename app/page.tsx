@@ -1,72 +1,80 @@
 // app/page.tsx
 'use client';
-
 import { useState } from 'react';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useSession, signIn, signOut } from "next-auth/react";
 import DateRangePicker from '@/components/DateRangePicker';
 import ExportButton from '@/components/ExportButton';
-import GoogleAuth from '@/components/GoogleAuth';
+import { exportEmails } from '@/lib/googleApi';
+import { convertToCSV, downloadCSV } from '@/lib/csvUtils';
 
 export default function Home() {
+  const { data: session, status } = useSession();
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const handleAuthSuccess = (credentialResponse: any) => {
-    setIsAuthenticated(true);
-    setToken(credentialResponse.credential);
-  };
+// app/page.tsx
 
-  const handleExport = async () => {
-    if (!isAuthenticated || !token || !startDate || !endDate) {
-      console.error('Cannot export: missing authentication or date range');
+const handleExport = async () => {
+  if (!session || !startDate || !endDate) {
+    console.error('Cannot export: missing authentication or date range');
+    return;
+  }
+
+  setIsExporting(true);
+
+  try {
+    const accessToken = (session as any).accessToken;
+    
+    if (!accessToken) {
+      console.error('Access token not found');
       return;
     }
 
-    try {
-      const response = await fetch('/api/export-emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-        }),
-      });
+    console.log('Starting email export...');
+    const emails = await exportEmails(accessToken, startDate, endDate);
+    console.log('Emails exported:', emails);
 
-      if (!response.ok) {
-        throw new Error('Failed to export emails');
-      }
-
-      const data = await response.json();
-      console.log('Emails exported:', data);
-      // Handle successful export (e.g., show success message, offer download link)
-    } catch (error) {
-      console.error('Error exporting emails:', error);
-      // Handle error (e.g., show error message to user)
+    if (emails.length === 0) {
+      console.log('No emails found in the selected date range');
+      return;
     }
-  };
+
+    console.log('Converting to CSV...');
+    const csvContent = convertToCSV(emails);
+    console.log('CSV content:', csvContent);
+
+    console.log('Initiating download...');
+    downloadCSV(csvContent, 'exported_emails.csv');
+  } catch (error) {
+    console.error('Error exporting emails:', error);
+    // TODO: Show error message to user
+  } finally {
+    setIsExporting(false);
+  }
+};
 
   return (
-    <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
-      <main className="flex min-h-screen flex-col items-center justify-center p-24">
-        <h1 className="text-4xl font-bold mb-8">Pitchl1st</h1>
-        <GoogleAuth onSuccess={handleAuthSuccess} />
-        {isAuthenticated && (
-          <>
-            <DateRangePicker
-              startDate={startDate}
-              endDate={endDate}
-              setStartDate={setStartDate}
-              setEndDate={setEndDate}
-            />
-            <ExportButton onClick={handleExport} disabled={!startDate || !endDate} />
-          </>
-        )}
-      </main>
-    </GoogleOAuthProvider>
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <h1 className="text-4xl font-bold mb-8">Pitchl1st</h1>
+      {status === "authenticated" ? (
+        <>
+          <button onClick={() => signOut()} className="mb-4">Sign out</button>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+          />
+          <ExportButton
+            onClick={handleExport}
+            disabled={!startDate || !endDate || isExporting}
+          />
+          {isExporting && <p>Exporting emails, please wait...</p>}
+        </>
+      ) : (
+        <button onClick={() => signIn("google")}>Sign in with Google</button>
+      )}
+    </main>
   );
 }
