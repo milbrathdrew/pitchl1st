@@ -76,7 +76,7 @@ export default function Home() {
         <>
           <button onClick={() => signOut()} className="mb-8">Sign out</button>
           <p className="mb-4 text-center">
-            Select two dates, and we'll generate a list of all pitches within that timeframe.
+            Select two dates, and we will generate a list of all pitches within that timeframe.
           </p>
           <DateRangePicker
             startDate={startDate}
