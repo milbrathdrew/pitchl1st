@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
 import DateRangePicker from '@/components/DateRangePicker';
 import ExportButton from '@/components/ExportButton';
+import Trivia from '@/components/Trivia';  // Import the Trivia component
 import { exportEmails } from '@/lib/googleApi';
 import { convertToCSV, downloadCSV } from '@/lib/csvUtils';
 
@@ -81,6 +82,7 @@ const handleExport = async () => {
             onClick={handleExport}
             disabled={!startDate || !endDate || isExporting}
           />
+          <Trivia />
           {(isExporting || exportProgress > 0) && (
             <p>
               {exportComplete
