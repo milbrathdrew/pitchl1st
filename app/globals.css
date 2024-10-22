@@ -25,3 +25,20 @@ body {
     text-wrap: balance;
   }
 }
+
+.btn-primary {
+  background-color: #b700ff; /* bg-blue-500 */
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem; /* py-2 px-4 */
+  border-radius: 0.25rem; /* rounded */
+}
+
+.btn-primary:hover {
+  background-color: #6e457e; /* hover:bg-blue-700 */
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

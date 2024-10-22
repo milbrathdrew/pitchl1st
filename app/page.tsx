@@ -12,8 +12,12 @@ export default function Home() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
+  const [exportComplete, setExportComplete] = useState(false);
 
-// app/page.tsx
+
+
+  // app/page.tsx
 
 const handleExport = async () => {
   if (!session || !startDate || !endDate) {
@@ -22,17 +26,21 @@ const handleExport = async () => {
   }
 
   setIsExporting(true);
+  setExportProgress(0);
+  setExportComplete(false);
 
   try {
     const accessToken = (session as any).accessToken;
-    
+
     if (!accessToken) {
       console.error('Access token not found');
       return;
     }
 
     console.log('Starting email export...');
-    const emails = await exportEmails(accessToken, startDate, endDate);
+    const emails = await exportEmails(accessToken, startDate, endDate, (progress) => {
+      setExportProgress(Math.round(progress));
+    });
     console.log('Emails exported:', emails);
 
     if (emails.length === 0) {
@@ -46,6 +54,8 @@ const handleExport = async () => {
 
     console.log('Initiating download...');
     downloadCSV(csvContent, 'exported_emails.csv');
+    setExportProgress(100);
+    setExportComplete(true);  // Set this to true when export is complete
   } catch (error) {
     console.error('Error exporting emails:', error);
     // TODO: Show error message to user
@@ -53,6 +63,7 @@ const handleExport = async () => {
     setIsExporting(false);
   }
 };
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -70,7 +81,24 @@ const handleExport = async () => {
             onClick={handleExport}
             disabled={!startDate || !endDate || isExporting}
           />
-          {isExporting && <p>Exporting emails, please wait...</p>}
+          {(isExporting || exportProgress > 0) && (
+            <p>
+              {exportComplete
+                ? `Your PitchL1st is ready! ${exportProgress}%`
+                : `Exporting your PitchL1st... ${exportProgress}%`}
+            </p>
+          )}
+          {exportComplete && (
+            <button
+              onClick={() => {
+                setExportProgress(0);
+                setExportComplete(false);
+              }}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Start New Export
+            </button>
+          )}
         </>
       ) : (
         <button onClick={() => signIn("google")}>Sign in with Google</button>

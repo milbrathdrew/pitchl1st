@@ -35,18 +35,31 @@ function cleanEmailData(emailData: any): CleanedEmail {
   return { dateSent, subject, toName, toEmail, link };
 }
 
-export async function exportEmails(accessToken: string, startDate: Date, endDate: Date): Promise<CleanedEmail[]> {
+export async function exportEmails(accessToken: string, startDate: Date, endDate: Date, onProgress: (progress: number) => void): Promise<CleanedEmail[]> {
   const emails: CleanedEmail[] = [];
   let pageToken = '';
+  let totalEmails = 0;
+  let processedEmails = 0
 
   console.log('Starting sent email export process...');
+
+  // First, get the total number of emails
+  const countResponse = await fetch(
+    `https://www.googleapis.com/gmail/v1/users/me/messages?q=in:sent after:${Math.floor(startDate.getTime() / 1000)} before:${Math.floor(endDate.getTime() / 1000)}&maxResults=1`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  const countData = await countResponse.json();
+  totalEmails = countData.resultSizeEstimate;
 
   do {
     try {
       console.log('Fetching sent messages list...');
-      // Construct the API request URL with date range and page token
       const response = await fetch(
-        `https://www.googleapis.com/gmail/v1/users/me/messages?q=in:sent after:${Math.floor(startDate.getTime()/1000)} before:${Math.floor(endDate.getTime()/1000)}${pageToken ? `&pageToken=${pageToken}` : ''}`,
+        `https://www.googleapis.com/gmail/v1/users/me/messages?q=in:sent after:${Math.floor(startDate.getTime() / 1000)} before:${Math.floor(endDate.getTime() / 1000)}${pageToken ? `&pageToken=${pageToken}` : ''}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -54,7 +67,6 @@ export async function exportEmails(accessToken: string, startDate: Date, endDate
         }
       );
 
-      // Handle potential errors in the API response
       if (!response.ok) {
         console.error(`Error fetching messages list: ${response.status} ${response.statusText}`);
         if (response.status === 429) {
@@ -67,11 +79,10 @@ export async function exportEmails(accessToken: string, startDate: Date, endDate
 
       const data = await response.json();
       console.log(`Fetched ${data.messages ? data.messages.length : 0} messages`);
-      
+
       if (data.messages && data.messages.length > 0) {
         for (const message of data.messages) {
           console.log(`Fetching details for message ${message.id}...`);
-          // Fetch individual message details
           const emailResponse = await fetch(
             `https://www.googleapis.com/gmail/v1/users/me/messages/${message.id}`,
             {
@@ -81,7 +92,6 @@ export async function exportEmails(accessToken: string, startDate: Date, endDate
             }
           );
 
-          // Handle potential errors in fetching message details
           if (!emailResponse.ok) {
             console.error(`Error fetching message details: ${emailResponse.status} ${emailResponse.statusText}`);
             if (emailResponse.status === 429) {
@@ -97,14 +107,15 @@ export async function exportEmails(accessToken: string, startDate: Date, endDate
           emails.push(cleanedEmail);
           console.log(`Added cleaned message ${message.id} to export list`);
 
-          // Add a small delay to avoid hitting rate limits
+          processedEmails++;
+          onProgress((processedEmails / totalEmails) * 100);
+
           await delay(100);
         }
       } else {
         console.log('No messages found in this page');
       }
 
-      // Update the page token for the next iteration
       pageToken = data.nextPageToken;
       console.log(`Next page token: ${pageToken}`);
     } catch (error) {
