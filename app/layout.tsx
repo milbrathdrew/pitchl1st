@@ -26,5 +26,5 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "PitchL1st",
-  description: "Created by loaf",
+  description: "Created by loaf with help from CodeGPT",
 };
