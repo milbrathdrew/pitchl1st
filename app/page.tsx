@@ -115,7 +115,7 @@ export default function Home() {
       ) : (
         <>
           <p className="mb-4">
-            Can't sign in? Request access to the BETA{' '}
+            Can&apos;t sign in? Request access to the BETA{' '}
             <a
               href="https://mail.google.com/mail/?view=cm&fs=1&to=opentoolsco@gmail.com&su=Requesting Access to Pitchl1st BETA"
               target="_blank"
@@ -127,6 +127,7 @@ export default function Home() {
           </p>
           <p className="mb-4">
             When you authenticate your Google account, be sure to accept all permissions for the app to work correctly!
+
           </p>
           <button onClick={() => signIn("google")}>Sign in with Google</button>
         </>
