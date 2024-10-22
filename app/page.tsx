@@ -115,7 +115,7 @@ export default function Home() {
       ) : (
         <>
           <p className="mb-4">
-            Can&apos;t sign in? Request access to the BETA{' '}
+            Trouble signing in? Request access to the BETA{' '}
             <a
               href="https://mail.google.com/mail/?view=cm&fs=1&to=opentoolsco@gmail.com&su=Requesting Access to Pitchl1st BETA"
               target="_blank"
