@@ -30,7 +30,6 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
 }) => {
   return (
     <div className="flex space-x-4 mb-4">
-      {/* Start Date Picker */}
       <DatePicker
         selected={startDate}
         onChange={(date: Date | null) => setStartDate(date)}
@@ -38,9 +37,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         startDate={startDate || undefined}
         endDate={endDate || undefined}
         placeholderText="Start Date"
-        className="p-2 border rounded"
+        className="custom-datepicker"
       />
-      {/* End Date Picker */}
       <DatePicker
         selected={endDate}
         onChange={(date: Date | null) => setEndDate(date)}
@@ -49,11 +47,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         endDate={endDate || undefined}
         minDate={startDate || undefined}
         placeholderText="End Date"
-        className="p-2 border rounded"
+        className="custom-datepicker"
       />
     </div>
   );
 };
 
-// Export the DateRangePicker component as the default export
 export default DateRangePicker;

@@ -1,121 +1,223 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-color: #9400f7;
+  --primary-hover: #7600c4;
+  --correct-color: #10b981;
+  --incorrect-color: #ef4444;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background-color: #000000;
+    --text-color: #ffffff;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-color: #ffffff;
+    --text-color: #000000;
   }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
 }
 
-.text-balance {
-  text-wrap: balance;
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem;
 }
 
-.btn-primary {
-  background-color: #b700ff;
+h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  color: var(--primary-color);
+}
+
+button {
+  background-color: var(--primary-color);
   color: white;
-  font-weight: bold;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+  margin: 0.75rem;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-.btn-primary:hover {
-  background-color: #6e457e;
+button:hover {
+  background-color: var(--primary-hover);
 }
 
-.btn-primary:disabled {
-  opacity: 0.5;
+button:disabled {
+  background-color: #9ca3af;
   cursor: not-allowed;
 }
 
 .trivia-container {
-  max-width: 28rem;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  margin-top: 2.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .trivia-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #b700ff;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
 }
 
 .trivia-question {
-  margin-bottom: 1rem;
-  font-size: 1.125rem;
-  color: #6e457e;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  font-weight: 500;
 }
 
 .trivia-answer-button {
+  display: block;
   width: 100%;
-  padding: 0.75rem;
   text-align: left;
-  border-radius: 0.25rem;
-  margin-bottom: 0.5rem;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.trivia-answer-button-default {
-  background-color: #e5e7eb;
-  color: #1f2937;
-}
-
-.trivia-answer-button-default:hover {
-  background-color: #d1d5db;
-}
-
-.trivia-answer-button-correct {
-  background-color: #10b981;
+  background-color: var(--primary-color);
   color: white;
+  border: none;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  padding: 1rem;
+  font-size: 1.1rem;
+  border-radius: 0.5rem;
 }
 
-.trivia-answer-button-incorrect {
-  background-color: #ef4444;
-  color: white;
+.trivia-answer-button:hover {
+  background-color: var(--primary-hover);
+}
+
+.trivia-answer-button.trivia-answer-button-correct {
+  background-color: var(--correct-color);
+}
+
+.trivia-answer-button.trivia-answer-button-correct:hover {
+  background-color: var(--correct-color);
+}
+
+.trivia-answer-button.trivia-answer-button-incorrect {
+  background-color: var(--incorrect-color);
+}
+
+.trivia-answer-button.trivia-answer-button-incorrect:hover {
+  background-color: var(--incorrect-color);
+}
+
+.trivia-answer-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.trivia-answer-button.trivia-answer-button-correct:disabled,
+.trivia-answer-button.trivia-answer-button-incorrect:disabled {
+  opacity: 1;
 }
 
 .trivia-feedback {
-  margin-top: 1rem;
-  font-size: 1.125rem;
+  margin-top: 2rem;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
+.trivia-score {
+  margin-top: 1.5rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.export-button {
+  margin-top: 1.5rem;
+}
+
+p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
 .trivia-next-button {
-  margin-top: 1rem;
-  background-color: #b700ff;
+  background-color: var(--primary-color);
   color: white;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.2s ease-in-out;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
 }
 
 .trivia-next-button:hover {
-  background-color: #6e457e;
+  background-color: var(--primary-hover);
 }
 
-.trivia-score {
-  margin-top: 1rem;
-  font-weight: bold;
-  color: #4b5563;
+/* Date picker overrides */
+.custom-datepicker {
+  color: black !important;
+  background-color: white !important;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: 1rem;
 }
 
-.trivia-container h2 {
-  margin-bottom: 1rem;
+.react-datepicker__input-container input {
+  color: black !important;
+  background-color: white !important;
 }
+
+.react-datepicker__month-container {
+  background-color: white;
+}
+
+.react-datepicker__header {
+  background-color: #f0f0f0;
+}
+
+.react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name {
+  color: black;
+}
+
+.react-datepicker__day:hover {
+  background-color: var(--primary-hover);
+  color: white;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.react-datepicker__day--selected:hover,
+.react-datepicker__day--in-selecting-range:hover,
+.react-datepicker__day--in-range:hover {
+  background-color: var(--primary-hover);
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.react-datepicker__day--keyboard-selected:hover {
+  background-color: var(--primary-hover);
+}
+
+
