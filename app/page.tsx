@@ -71,10 +71,13 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-8">Pitchl1st</h1>
+      <h1 className="text-4xl font-bold mb-2">Pitchl1st</h1>
       {status === "authenticated" ? (
         <>
-          <button onClick={() => signOut()} className="mb-4">Sign out</button>
+          <button onClick={() => signOut()} className="mb-8">Sign out</button>
+          <p className="mb-4 text-center">
+            Select two dates, and we'll generate a list of all pitches within that timeframe.
+          </p>
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
@@ -95,16 +98,38 @@ export default function Home() {
           {exportComplete && (
             <button
               onClick={startNewExport}
-              className="btn-primary"
+              className="btn-primary mt-4 mb-8"
             >
-              Start New Export
+              Start new Pitchl1st
             </button>
           )}
-          <Trivia />
-
+          {(isExporting || exportProgress > 0) && (
+            <>
+              <p className="mt-4 mb-2 text-center font-semibold">
+                Trivia while you wait?
+              </p>
+              <Trivia />
+            </>
+          )}
         </>
       ) : (
-        <button onClick={() => signIn("google")}>Sign in with Google</button>
+        <>
+          <p className="mb-4">
+            Can't sign in? Request access to the BETA{' '}
+            <a
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=opentoolsco@gmail.com&su=Requesting Access to Pitchl1st BETA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:text-blue-700 underline"
+            >
+              here
+            </a>
+          </p>
+          <p className="mb-4">
+            When you authenticate your Google account, be sure to accept all permissions for the app to work correctly!
+          </p>
+          <button onClick={() => signIn("google")}>Sign in with Google</button>
+        </>
       )}
     </main>
   );

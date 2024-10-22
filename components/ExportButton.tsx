@@ -23,7 +23,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ onClick, disabled }) => {
       disabled={disabled}  // Set the disabled state
       className="btn-primary" //Style the button using globals.css class
     >
-      Export Emails to CSV
+      Generate Pitchl1st (CSV)
     </button>
   );
 };
