@@ -1,9 +1,18 @@
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth"
+import NextAuth, { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { JWT } from "next-auth/jwt"
+import { Session } from "next-auth"
 
-const handler = NextAuth({
+interface ExtendedSession extends Session {
+  accessToken?: string
+}
+
+interface ExtendedJWT extends JWT {
+  accessToken?: string
+}
+
+const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -16,17 +25,21 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, account }: { token: JWT; account: any }) {
+    async jwt({ token, account }): Promise<ExtendedJWT> {
       if (account) {
         token.accessToken = account.access_token
       }
-      return token
+      return token as ExtendedJWT
     },
-    async session({ session, token }: { session: any; token: JWT }) {
-      session.accessToken = token.accessToken
-      return session
+    async session({ session, token }): Promise<ExtendedSession> {
+      (session as ExtendedSession).accessToken = (token as ExtendedJWT).accessToken
+      return session as ExtendedSession
     },
   },
-})
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development',
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
