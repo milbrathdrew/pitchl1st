@@ -20,25 +20,102 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.text-balance {
+  text-wrap: balance;
 }
 
 .btn-primary {
-  background-color: #b700ff; /* bg-blue-500 */
+  background-color: #b700ff;
   color: white;
   font-weight: bold;
-  padding: 0.5rem 1rem; /* py-2 px-4 */
-  border-radius: 0.25rem; /* rounded */
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
 }
 
 .btn-primary:hover {
-  background-color: #6e457e; /* hover:bg-blue-700 */
+  background-color: #6e457e;
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.trivia-container {
+  max-width: 28rem;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.trivia-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #b700ff;
+}
+
+.trivia-question {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  color: #6e457e;
+}
+
+.trivia-answer-button {
+  width: 100%;
+  padding: 0.75rem;
+  text-align: left;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.trivia-answer-button-default {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.trivia-answer-button-default:hover {
+  background-color: #d1d5db;
+}
+
+.trivia-answer-button-correct {
+  background-color: #10b981;
+  color: white;
+}
+
+.trivia-answer-button-incorrect {
+  background-color: #ef4444;
+  color: white;
+}
+
+.trivia-feedback {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.trivia-next-button {
+  margin-top: 1rem;
+  background-color: #b700ff;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.trivia-next-button:hover {
+  background-color: #6e457e;
+}
+
+.trivia-score {
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #4b5563;
+}
+
+.trivia-container h2 {
+  margin-bottom: 1rem;
 }
