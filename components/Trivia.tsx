@@ -1,6 +1,5 @@
 'use client';
-
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 interface TriviaQuestion {
   id: string;
@@ -69,61 +68,64 @@ export default function Trivia() {
     return [...question.incorrectAnswers, question.correctAnswer].sort(() => Math.random() - 0.5);
   };
 
-  if (loading) return <div>Loading trivia questions...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (questions.length === 0) return null;
-
-  if (quizCompleted) {
-    return (
-      <div className="trivia-container">
-        <h2 className="trivia-title">Quiz Completed!</h2>
-        <p className="trivia-question">Your score: {score} out of {questions.length}</p>
-        <button onClick={fetchQuestions} className="trivia-next-button">
-          Start New Quiz
-        </button>
-      </div>
-    );
-  }
-
-  const currentQuestion = questions[currentQuestionIndex];
-  const answers = shuffleAnswers(currentQuestion);
-
-  return (
-    <div className="trivia-container">
-      <h2 className="trivia-title">Trivia Question {currentQuestionIndex + 1} of {questions.length}</h2>
-      <p className="trivia-question">{currentQuestion.question.text}</p>
-      <div>
-        {answers.map((answer, index) => (
-          <button
-            key={index}
-            onClick={() => handleAnswerSelect(answer)}
-            className={`trivia-answer-button ${
-              selectedAnswer === answer
-                ? isCorrect
-                  ? 'trivia-answer-button-correct'
-                  : 'trivia-answer-button-incorrect'
-                : 'trivia-answer-button-default'
-            }`}
-            disabled={selectedAnswer !== null}
-          >
-            {answer}
-          </button>
-        ))}
-      </div>
-      {selectedAnswer && (
-        <div className="trivia-feedback">
-          <p style={{ color: isCorrect ? '#10b981' : '#ef4444' }}>
-            {isCorrect ? 'Correct!' : 'Incorrect. The correct answer was: ' + currentQuestion.correctAnswer}
-          </p>
-          <button
-            onClick={nextQuestion}
-            className="trivia-next-button"
-          >
-            {currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+  const memoizedTriviaContent = useMemo(() => {
+    if (loading) return <div>Loading trivia questions...</div>;
+    if (error) return <div>Error: {error}</div>;
+    if (questions.length === 0) return null;
+    if (quizCompleted) {
+      return (
+        <div className="trivia-container">
+          <h2 className="trivia-title">Quiz Completed!</h2>
+          <p className="trivia-question">Your score: {score} out of {questions.length}</p>
+          <button onClick={fetchQuestions} className="trivia-next-button">
+            Start New Quiz
           </button>
         </div>
-      )}
-      <p className="trivia-score">Current Score: {score}/{currentQuestionIndex + 1}</p>
-    </div>
-  );
+      );
+    }
+
+    const currentQuestion = questions[currentQuestionIndex];
+    const answers = shuffleAnswers(currentQuestion);
+
+    return (
+      <div className="trivia-container">
+        <h2 className="trivia-title">Trivia Question {currentQuestionIndex + 1} of {questions.length}</h2>
+        <p className="trivia-question">{currentQuestion.question.text}</p>
+        <div>
+          {answers.map((answer, index) => (
+            <button
+              key={index}
+              onClick={() => handleAnswerSelect(answer)}
+              className={`trivia-answer-button ${
+                selectedAnswer === answer
+                  ? isCorrect
+                    ? 'trivia-answer-button-correct'
+                    : 'trivia-answer-button-incorrect'
+                  : 'trivia-answer-button-default'
+              }`}
+              disabled={selectedAnswer !== null}
+            >
+              {answer}
+            </button>
+          ))}
+        </div>
+        {selectedAnswer && (
+          <div className="trivia-feedback">
+            <p style={{ color: isCorrect ? '#10b981' : '#ef4444' }}>
+              {isCorrect ? 'Correct!' : 'Incorrect. The correct answer was: ' + currentQuestion.correctAnswer}
+            </p>
+            <button
+              onClick={nextQuestion}
+              className="trivia-next-button"
+            >
+              {currentQuestionIndex === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+            </button>
+          </div>
+        )}
+        <p className="trivia-score">Current Score: {score}/{currentQuestionIndex + 1}</p>
+      </div>
+    );
+  }, [loading, error, questions, currentQuestionIndex, selectedAnswer, isCorrect, score, quizCompleted]);
+
+  return memoizedTriviaContent;
 }

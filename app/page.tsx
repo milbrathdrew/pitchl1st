@@ -16,55 +16,58 @@ export default function Home() {
   const [exportProgress, setExportProgress] = useState(0);
   const [exportComplete, setExportComplete] = useState(false);
 
-
-
-  // app/page.tsx
-
-const handleExport = async () => {
-  if (!session || !startDate || !endDate) {
-    console.error('Cannot export: missing authentication or date range');
-    return;
-  }
-
-  setIsExporting(true);
-  setExportProgress(0);
-  setExportComplete(false);
-
-  try {
-    const accessToken = (session as any).accessToken;
-
-    if (!accessToken) {
-      console.error('Access token not found');
+  const handleExport = async () => {
+    if (!session || !startDate || !endDate) {
+      console.error('Cannot export: missing authentication or date range');
       return;
     }
 
-    console.log('Starting email export...');
-    const emails = await exportEmails(accessToken, startDate, endDate, (progress) => {
-      setExportProgress(Math.round(progress));
-    });
-    console.log('Emails exported:', emails);
+    setIsExporting(true);
+    setExportProgress(0);
+    setExportComplete(false);
 
-    if (emails.length === 0) {
-      console.log('No emails found in the selected date range');
-      return;
+    try {
+      const accessToken = (session as any).accessToken;
+
+      if (!accessToken) {
+        console.error('Access token not found');
+        return;
+      }
+
+      console.log('Starting email export...');
+      const emails = await exportEmails(accessToken, startDate, endDate, (progress) => {
+        setExportProgress(Math.round(progress));
+      });
+      console.log('Emails exported:', emails);
+
+      if (emails.length === 0) {
+        console.log('No emails found in the selected date range');
+        return;
+      }
+
+      console.log('Converting to CSV...');
+      const csvContent = convertToCSV(emails);
+      console.log('CSV content:', csvContent);
+
+      console.log('Initiating download...');
+      downloadCSV(csvContent, 'exported_emails.csv');
+      setExportProgress(100);
+      setExportComplete(true);  // Set this to true when export is complete
+    } catch (error) {
+      console.error('Error exporting emails:', error);
+      // TODO: Show error message to user
+    } finally {
+      setIsExporting(false);
     }
+  };
 
-    console.log('Converting to CSV...');
-    const csvContent = convertToCSV(emails);
-    console.log('CSV content:', csvContent);
-
-    console.log('Initiating download...');
-    downloadCSV(csvContent, 'exported_emails.csv');
-    setExportProgress(100);
-    setExportComplete(true);  // Set this to true when export is complete
-  } catch (error) {
-    console.error('Error exporting emails:', error);
-    // TODO: Show error message to user
-  } finally {
+  const startNewExport = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setExportProgress(0);
+    setExportComplete(false);
     setIsExporting(false);
-  }
-};
-
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -82,25 +85,23 @@ const handleExport = async () => {
             onClick={handleExport}
             disabled={!startDate || !endDate || isExporting}
           />
-          <Trivia />
           {(isExporting || exportProgress > 0) && (
             <p>
               {exportComplete
-                ? `Your PitchL1st is ready! ${exportProgress}%`
+                ? `Your PitchL1st is ready! ${exportProgress}% | Check your downloads folder`
                 : `Exporting your PitchL1st... ${exportProgress}%`}
             </p>
           )}
           {exportComplete && (
             <button
-              onClick={() => {
-                setExportProgress(0);
-                setExportComplete(false);
-              }}
+              onClick={startNewExport}
               className="btn-primary"
             >
               Start New Export
             </button>
           )}
+          <Trivia />
+
         </>
       ) : (
         <button onClick={() => signIn("google")}>Sign in with Google</button>
