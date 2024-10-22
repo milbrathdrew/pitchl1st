@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 interface TriviaQuestion {
   id: string;
@@ -45,16 +45,16 @@ export default function Trivia() {
     }
   };
 
-  const handleAnswerSelect = (answer: string) => {
+  const handleAnswerSelect = useCallback((answer: string) => {
     setSelectedAnswer(answer);
     const correct = answer === questions[currentQuestionIndex]?.correctAnswer;
     setIsCorrect(correct);
     if (correct) {
       setScore(prevScore => prevScore + 1);
     }
-  };
+  }, [questions, currentQuestionIndex]);
 
-  const nextQuestion = () => {
+  const nextQuestion = useCallback(() => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setSelectedAnswer(null);
@@ -62,7 +62,7 @@ export default function Trivia() {
     } else {
       setQuizCompleted(true);
     }
-  };
+  }, [currentQuestionIndex, questions.length]);
 
   const shuffleAnswers = (question: TriviaQuestion) => {
     return [...question.incorrectAnswers, question.correctAnswer].sort(() => Math.random() - 0.5);
@@ -125,7 +125,7 @@ export default function Trivia() {
         <p className="trivia-score">Current Score: {score}/{currentQuestionIndex + 1}</p>
       </div>
     );
-  }, [loading, error, questions, currentQuestionIndex, selectedAnswer, isCorrect, score, quizCompleted]);
+  }, [loading, error, questions, currentQuestionIndex, selectedAnswer, isCorrect, score, quizCompleted, handleAnswerSelect, nextQuestion]);
 
   return memoizedTriviaContent;
 }

@@ -6,6 +6,7 @@ export async function GET() {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
+    console.error('Error fetching trivia question:', error);
     return NextResponse.json({ error: 'Failed to fetch trivia question' }, { status: 500 });
   }
 }
