@@ -69,14 +69,30 @@ export default function Home() {
     setIsExporting(false);
   };
 
+  const FeedbackLink = () => (
+    <p className="mt-4 text-sm">
+      We value your feedback! Please share your thoughts{' '}
+      <a 
+        href="https://forms.gle/D4W7daTsWQ5F17av5" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="text-blue-500 hover:text-blue-700 underline"
+      >
+        here
+      </a>
+    </p>
+  );
+
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <h1 className="text-4xl font-bold mb-2">Pitchl1st</h1>
       {status === "authenticated" ? (
         <>
           <button onClick={() => signOut()} className="mb-8">Sign out</button>
+          <FeedbackLink />
           <p className="mb-4 text-center">
-            Select two dates, and we will generate a list of all pitches within that timeframe.
+            Select two dates, and we will generate pitch list within that timeframe.
           </p>
           <DateRangePicker
             startDate={startDate}
@@ -130,6 +146,7 @@ export default function Home() {
 
           </p>
           <button onClick={() => signIn("google")}>Sign in with Google</button>
+          <FeedbackLink/>
         </>
       )}
     </main>
